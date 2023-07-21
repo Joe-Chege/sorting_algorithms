@@ -58,7 +58,7 @@ void counting_sort(int *array, size_t size)
 
     print_array(count, max + 1);
 
-    for (i = size - 1; i >= 0; i--) 
+    for (i = size - 1; i >= 0; i--) // Note: Loop in reverse for stable sorting
     {
         sorted[count[array[i]] - 1] = array[i];
         count[array[i]] -= 1;
