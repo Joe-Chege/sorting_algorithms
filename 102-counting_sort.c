@@ -1,72 +1,47 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "sort.h"
 
 /**
- * get_max - Get the maximum value in an array of integers.
- * @array: An array of integers.
- * @size: The size of the array.
+ * counting_sort - Sorts an array of integers in ascending order
+ * using the Counting sort algorithm
  *
- * Return: The maximum integer in the array.
- */
-int get_max(int *array, int size)
-{
-    int max, i;
-
-    for (max = array[0], i = 1; i < size; i++)
-    {
-        if (array[i] > max)
-            max = array[i];
-    }
-
-    return (max);
-}
-
-/**
- * counting_sort - Sort an array of integers in ascending order
- *                 using the counting sort algorithm.
- * @array: An array of integers.
- * @size: The size of the array.
- *
- * Description: Prints the counting array after setting it up.
+ * @array: Pointer to the array to be sorted
+ * @size: Number of elements in the array
  */
 void counting_sort(int *array, size_t size)
 {
-    int *count, *sorted, max, i;
+    int n, j, *count_array, *aux;
+	size_t i;
 
-    if (array == NULL || size < 2)
-        return;
-
-    sorted = malloc(sizeof(int) * size);
-    if (sorted == NULL)
-        return;
-
-    max = get_max(array, size);
-    count = malloc(sizeof(int) * (max + 1));
-    if (count == NULL)
-    {
-        free(sorted);
-        return;
-    }
-
-    for (i = 0; i < (max + 1); i++)
-        count[i] = 0;
-
-    for (i = 0; i < (int)size; i++)
-        count[array[i]] += 1;
-
-    for (i = 1; i < (max + 1); i++) // Corrected initialization of cumulative count
-        count[i] += count[i - 1];
-
-    print_array(count, max + 1);
-
-    for (i = size - 1; i >= 0; i--) // Note: Loop in reverse for stable sorting
-    {
-        sorted[count[array[i]] - 1] = array[i];
-        count[array[i]] -= 1;
-    }
-
-    for (i = 0; i < (int)size; i++)
-        array[i] = sorted[i];
-
-    free(sorted);
-    free(count);
+	if (!array || size < 2)
+		return;
+	n = array[0];
+	for (i = 0; i < size; i++)
+	{
+		if (array[i] > n)
+			n = array[i];
+	}
+	count_array = calloc((n + 1), sizeof(int));
+	for (i = 0; i < size; i++)
+	{
+		count_array[array[i]]++;
+	}
+	for (j = 1; j < n; j++)
+	{
+		count_array[j + 1] += count_array[j];
+	}
+	print_array(count_array, n + 1);
+	aux = malloc(sizeof(int) * size);
+	for (i = 0; i < size; i++)
+	{
+		count_array[array[i]]--;
+		aux[count_array[array[i]]] = array[i];
+	}
+	for (i = 0; i < size; i++)
+	{
+		array[i] = aux[i];
+	}
+	free(aux);
+	free(count_array);
 }
