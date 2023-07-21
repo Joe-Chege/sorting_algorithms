@@ -1,28 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "sort.h"
-
-/**
- * swap_node - Swaps a node for its previous one
- * @node: The node to swap
- * @list: The pointer to the head of the doubly linked list
- *
- * Return: Pointer to the node which was swapped
- */
-listint_t *swap_node(listint_t *node, listint_t **list)
-{
-    listint_t *back = node->prev, *curr = node;
-
-    back->next = curr->next;
-    if (curr->next)
-        curr->next->prev = back;
-    curr->next = back;
-    curr->prev = back->prev;
-    back->prev = curr;
-    if (curr->prev)
-        curr->prev->next = curr;
-    else
-        *list = curr;
-    return (curr);
-}
 
 /**
  * insertion_sort_list - Sorts a doubly linked list in ascending order
@@ -31,19 +9,43 @@ listint_t *swap_node(listint_t *node, listint_t **list)
  */
 void insertion_sort_list(listint_t **list)
 {
-    listint_t *node;
-
     if (list == NULL || (*list)->next == NULL)
         return;
 
-    node = (*list)->next;
-    while (node)
+    listint_t *curr, *back, *tail;
+    curr = (*list)->next;
+    tail = curr;
+
+    while (curr)
     {
-        while ((node->prev) && (node->prev->n > node->n))
+        if (curr->n < curr->prev->n)
         {
-            node = swap_node(node, list);
+            back = curr->prev;
+            while (back && back->n > curr->n)
+            {
+                back->next = curr->next;
+                if (curr->next)
+                    curr->next->prev = back;
+
+                if (back->prev)
+                    back->prev->next = curr;
+                else
+                    *list = curr;
+
+                curr->prev = back->prev;
+                back->prev = curr;
+                curr->next = back;
+
+                back = curr->prev;
+            }
             print_list(*list);
         }
-        node = node->next;
+        else
+        {
+            curr = curr->next;
+        }
+
+        if (curr && curr->n > tail->n)
+            tail = curr;
     }
 }
